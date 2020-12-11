@@ -8,16 +8,22 @@ public class Main {
     private static JLabel subheading;
     private static JButton citiesButton;
     private static JButton factoriesButton;
-    private static JButton randomButton;
+    private static JButton homeButton;
 
     private static JButton nextButton;
-    private static JRadioButton option1;
-    private static JRadioButton option2;
-    private static JRadioButton option3;
-    private static JRadioButton option4;
+
+    private static Data data;
+
+    private static final int STATUS_START_OR_END = 0;
+    private static final int ANSWERING = 1;
+    private static final int ANSWERED = 2;
+
+    private static int uiStatus = STATUS_START_OR_END;
+    private static boolean displayingCities;
+    private static Factory currentFactory;
 
     public static void main(String[] args) {
-        frame = new JFrame();
+        frame = new JFrame("Zkoušení ze zeměpisu");
         frame.setBounds(200,200,500,500);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -28,32 +34,53 @@ public class Main {
         heading.setBounds(50,50,screenSize.width,30);
         subheading = new JLabel("Vyber si mód:");
         subheading.setBounds(50,80,screenSize.width,30);
-        citiesButton = new JButton("Města k podnikům");
+        citiesButton = new JButton("Zobrazovat města");
         citiesButton.setBounds(50,250,200,50);
-        factoriesButton = new JButton("Podniky k městům");
+        factoriesButton = new JButton("Zobrazovat podniky");
         factoriesButton.setBounds(50,150,200,50);
-        randomButton = new JButton("Náhodně");
-        randomButton.setBounds(50,350,200,50);
-
-        nextButton = new JButton("next");
+        nextButton = new JButton("Next");
         nextButton.setBounds(350,350,100,50);
-        option1 = new JRadioButton();
-        option2 = new JRadioButton();
-        option3 = new JRadioButton();
-        option4 = new JRadioButton();
+        homeButton = new JButton("Home");
+        homeButton.setBounds(50,350,100,50);
 
         displayStartScreen();
         citiesButton.addActionListener((actionEvent)->displayCitiesQuestions());
         factoriesButton.addActionListener((actionEvent)->displayFactoriesQuestions());
-        citiesButton.addActionListener((actionEvent)->displayRandomQuestions());
+        homeButton.addActionListener((actionEvent)->displayStartScreen());
+
+        nextButton.addActionListener((actionEvent)->{
+            System.out.println(uiStatus);
+            switch (uiStatus) {
+                case(ANSWERED):
+                    if(displayingCities){
+                        displayCitiesQuestions();
+                    }else{
+                        displayFactoriesQuestions();
+                    }
+                    break;
+                case(ANSWERING):
+                    displayResult();
+                    break;
+                case(STATUS_START_OR_END):
+                    displayStartScreen();
+                    break;
+            }
+        });
+
+        data = new Data();
     }
     private static void displayFactoriesQuestions(){
-
+        displayingCities = false;
+        currentFactory = data.getRandomFactory();
+        heading.setText(currentFactory.getName());
+        displayQuestion();
     }
 
-    private static void displayRandomQuestions(){
-    }
     private static void displayCitiesQuestions(){
+        displayingCities = true;
+        currentFactory = data.getRandomFactory();
+        heading.setText(currentFactory.getCity());
+        displayQuestion();
 
     }
     private static void displayStartScreen(){
@@ -61,28 +88,38 @@ public class Main {
         frame.add(subheading);
         frame.add(citiesButton);
         frame.add(factoriesButton);
-        frame.add(randomButton);
 
         heading.setText("Vítej na zkoušení ze zeměpisu!");
         subheading.setText("Vyber si mód:");
 
         frame.remove(nextButton);
-        frame.remove(option1);
-        frame.remove(option2);
-        frame.remove(option3);
-        frame.remove(option4);
-
-    }
-    private static void displayEndScreen(){
+        frame.remove(homeButton);
+        frame.repaint();
 
     }
     private static void displayQuestion(){
+        uiStatus = ANSWERING;
         frame.add(nextButton);
-        frame.add(option1);
-        frame.add(option2);
-        frame.add(option3);
-        frame.add(option4);
+        frame.add(homeButton);
 
-        nextButton.setText("next");
+        frame.remove(citiesButton);
+        frame.remove(factoriesButton);
+        frame.remove(subheading);
+
+        nextButton.setText("Next");
+
+        frame.repaint();
+
     }
+    private static void displayResult(){
+        uiStatus = ANSWERED;
+        frame.add(subheading);
+        if(displayingCities) {
+            subheading.setText(currentFactory.getName() + " (" + currentFactory.getIndustryType() + ")");
+        }else {
+            subheading.setText(currentFactory.getCity());
+        }
+        frame.repaint();
+    }
+
 }

@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class Data {
     private List<Factory> citiesAndFactories;
-    private Data(){
+    private int counter;
+    public Data(){
         citiesAndFactories = new ArrayList<>();
         //Hutnický
         citiesAndFactories.add(new Factory("Vítkovice steel","hutnický","Ostrava"));
@@ -17,7 +19,7 @@ public class Data {
         citiesAndFactories.add(new Factory("Spolana","chemický-ropa", "Neratovice"));
         citiesAndFactories.add(new Factory("Unipetrol","chemický-ropa", "Litvínov"));
         citiesAndFactories.add(new Factory("Lovochemie","chemický-hnojiva", "Lovosice"));
-        citiesAndFactories.add(new Factory("Explosia","Pardubice", "chemický-semtex"));
+        citiesAndFactories.add(new Factory("Explosia","chemický-semtex", "Pardubice"));
         citiesAndFactories.add(new Factory("Barum Continental","chemický-pneumatiky", "Otrokovice"));
         citiesAndFactories.add(new Factory("Paramo","chemický-asfalty a oleje", "Pardubice"));
         citiesAndFactories.add(new Factory("Procter and Gamble","chemický-drogerie", "Rakovník"));
@@ -89,5 +91,15 @@ public class Data {
         citiesAndFactories.add(new Factory("Opavia","sušenky", "Opava"));
         citiesAndFactories.add(new Factory("Stock","alkohol", "Plzeň"));
 
+    }
+
+    public Factory getRandomFactory(){
+        Random random = new Random();
+        return citiesAndFactories.get(random.nextInt(citiesAndFactories.size()));
+    }
+    public Factory getSortedFactory(){
+        Factory result = citiesAndFactories.get(counter);
+        counter++;
+        return result;
     }
 }
